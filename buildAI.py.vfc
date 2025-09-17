@@ -1,0 +1,235 @@
+;  IRL FlowCode Version: Version 10.0
+;  c1995-2015: Visual Flow Coder by 2LResearch
+;
+;  File Name : buildAI.py.vfc
+;  File Date : 07:51:19 PM - 16:Sep:2025
+
+set();// !/usr/bin/env python3
+event(import argparse);// 
+event(import os);// 
+event(import sys);// 
+event(import shutil);// 
+event(import subprocess);// 
+event(from pathlib import Path);// 
+event(from typing import Optional);// 
+set();//  -------- AI backend (OpenAI) --------
+
+input(def call_openai(system_prompt: str, user_prompt: str, model: str, api_key: Optional[str] = None, temperature: float = 0.2) -> str:);// beginfunc
+set(""");//
+set(Calls OpenAI Chat Completions API.);// 
+set(Requires: pip install openai);// 
+set(Environment: OPENAI_API_KEY (or pass api_key));// 
+set(""");//
+branch(try:);// begintry
+path();//
+event(from openai import OpenAI);//  openai>=1.0
+path(except Exception as e:);// 
+set(print("ERROR: The 'openai' package is required. Install with: pip install openai", file=sys.stderr));// 
+set(raise);// 
+bend();// endtry
+set(client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY")));// 
+branch(if not client.api_key:);// beginif
+path();//
+set(raise RuntimeError("OPENAI_API_KEY not set and no api_key provided."));// 
+bend();// endif
+set(resp = client.chat.completions.create();// 
+set(model=model,);// 
+set(temperature=temperature,);// 
+set(messages=[);// 
+set({"role": "system", "content": system_prompt},);// 
+set({"role": "user", "content": user_prompt},);// 
+set(],);// 
+set());// 
+set(content = resp.choices[0].message.content or "");// 
+set(return content.strip());// 
+end();// endfunc
+set();//  -------- Editor helpers --------
+
+input(def open_in_editor(filepath: Path, editor: Optional[str]) -> None:);// beginfunc
+set(""");//
+set(Open the given file in an editor.);// 
+set(Priority:);// 
+set(1) --editor flag if provided);// 
+set(2) $VISUAL or $EDITOR);// 
+set(3) Platform default opener (Windows: startfile, macOS: open, Linux: xdg-open));// 
+set(""");//
+branch(if editor:);// beginif
+path();//
+branch(try:);// begintry
+path();//
+set(subprocess.run([editor, str(filepath)], check=False));// 
+set(return);// 
+path(except Exception as e:);// 
+set(print(f"Warning: failed to launch editor '{editor}': {e}", file=sys.stderr));// 
+bend();// endtry
+bend();// endif
+set(env_editor = os.getenv("VISUAL") or os.getenv("EDITOR"));// 
+branch(if env_editor:);// beginif
+path();//
+branch(try:);// begintry
+path();//
+set(subprocess.run([env_editor, str(filepath)], check=False));// 
+set(return);// 
+path(except Exception as e:);// 
+set(print(f"Warning: failed to launch $VISUAL/$EDITOR '{env_editor}': {e}", file=sys.stderr));// 
+bend();// endtry
+bend();// endif
+set();//  Fallback to platform default
+branch(try:);// begintry
+path();//
+branch(if sys.platform.startswith("win"):);// beginif
+path();//
+set(os.startfile(str(filepath)));//  type: ignore[attr-defined]
+path(elif sys.platform == "darwin":);// beginelif
+set(subprocess.run(["open", str(filepath)], check=False));// 
+path(else:);// 
+set(subprocess.run(["xdg-open", str(filepath)], check=False));// 
+set();// endlif
+bend();// endif
+path(except Exception as e:);// 
+set(print(f"Warning: failed to open with system default: {e}", file=sys.stderr));// 
+bend();// endtry
+end();// endfunc
+set();//  -------- Core logic --------
+
+input(def derive_output_path(vfc_path: Path) -> Path:);// beginfunc
+set(""");//
+set(Remove a single trailing '.vfc' extension from the filename.);// 
+set(e.g. /a/b/thing.txt.vfc -> /a/b/thing.txt);// 
+set(/a/b/thing.vfc     -> /a/b/thing);// 
+set(""");//
+branch(if vfc_path.suffix == ".vfc":);// beginif
+path();//
+set(return vfc_path.with_suffix(""));// 
+bend();// endif
+set();//  If someone passed a weird filename without .vfc, still do the best we can
+set(name = vfc_path.name);// 
+branch(if name.endswith(".vfc"):);// beginif
+path();//
+set(return vfc_path.with_name(name[:-4]));// 
+bend();// endif
+set();//  Otherwise, keep the same but without changing (shouldn't happen in normal use)
+set(return vfc_path);// 
+end();// endfunc
+
+input(def main():);// beginfunc
+set(parser = argparse.ArgumentParser();// 
+set(description="Run an AI with a .vfc file as the system prompt, save output to <filename> (without .vfc), and open it.");// 
+set());// 
+set(parser.add_argument("vfc_file", type=str, help="Path to the .vfc file"));// 
+set(parser.add_argument();// 
+set("-p", "--prompt",);// 
+set(type=str,);// 
+set(required=True,);// 
+set(help="User prompt to send to the AI (the .vfc contents are used as SYSTEM prompt).");// 
+set());// 
+set(parser.add_argument();// 
+set("--model",);// 
+set(type=str,);// 
+set(default="gpt-4o-mini",);// 
+set(help="Model name for the AI backend (default: gpt-4o-mini).");// 
+set());// 
+set(parser.add_argument();// 
+set("--backend",);// 
+set(type=str,);// 
+set(choices=["openai"],);// 
+set(default="openai",);// 
+set(help="AI backend to use (currently only 'openai').");// 
+set());// 
+set(parser.add_argument();// 
+set("--api-key",);// 
+set(type=str,);// 
+set(default=None,);// 
+set(help="API key for the backend; if omitted, uses environment variable (e.g., OPENAI_API_KEY).");// 
+set());// 
+set(parser.add_argument();// 
+set("--temperature",);// 
+set(type=float,);// 
+set(default=0.2,);// 
+set(help="Sampling temperature (default: 0.2).");// 
+set());// 
+set(parser.add_argument();// 
+set("--editor",);// 
+set(type=str,);// 
+set(default=None,);// 
+set(help="Editor command to open the output (e.g., 'code', 'notepad', 'vim'). If omitted, uses $VISUAL/$EDITOR or OS default.");// 
+set());// 
+set(parser.add_argument();// 
+set("-f", "--force",);// 
+set(action="store_true",);// 
+set(help="Overwrite output file if it exists.");// 
+set());// 
+set(parser.add_argument();// 
+set("--dry-run",);// 
+set(action="store_true",);// 
+set(help="Run through prompts and show what would happen without calling the AI or writing files.");// 
+set());// 
+set(args = parser.parse_args());// 
+set(vfc_path = Path(args.vfc_file).expanduser().resolve());// 
+branch(if not vfc_path.exists():);// beginif
+path();//
+set(print(f"ERROR: input file not found: {vfc_path}", file=sys.stderr));// 
+set(sys.exit(1));// 
+bend();// endif
+branch(try:);// begintry
+path();//
+set(system_prompt = vfc_path.read_text(encoding="utf-8"));// 
+path(except Exception as e:);// 
+set(print(f"ERROR: failed to read {vfc_path}: {e}", file=sys.stderr));// 
+set(sys.exit(1));// 
+bend();// endtry
+set(out_path = derive_output_path(vfc_path));// 
+branch(if out_path.exists() and not args.force:);// beginif
+path();//
+set(print(f"ERROR: output file already exists: {out_path}\nUse --force to overwrite.", file=sys.stderr));// 
+set(sys.exit(1));// 
+bend();// endif
+branch(if args.dry_run:);// beginif
+path();//
+set(print("=== DRY RUN ==="));// 
+set(print(f"Backend: {args.backend}"));// 
+set(print(f"Model: {args.model}"));// 
+set(print(f"Input (.vfc): {vfc_path}"));// 
+set(print(f"Output: {out_path}"));// 
+set(print(f"User prompt: {args.prompt}"));// 
+set(print(f"System prompt length: {len(system_prompt)} characters"));// 
+set(sys.exit(0));// 
+bend();// endif
+set();//  Call AI
+branch(try:);// begintry
+path();//
+branch(if args.backend == "openai":);// beginif
+path();//
+set(ai_output = call_openai(system_prompt, args.prompt, model=args.model, api_key=args.api_key, temperature=args.temperature));// 
+path(else:);// 
+set(raise ValueError(f"Unsupported backend: {args.backend}"));// 
+bend();// endif
+path(except Exception as e:);// 
+set(print(f"ERROR: AI call failed: {e}", file=sys.stderr));// 
+set(sys.exit(2));// 
+bend();// endtry
+set();//  Write output
+branch(try:);// begintry
+path();//
+set(out_path.write_text(ai_output, encoding="utf-8"));// 
+path(except Exception as e:);// 
+set(print(f"ERROR: failed to write output to {out_path}: {e}", file=sys.stderr));// 
+set(sys.exit(3));// 
+bend();// endtry
+set();//  Open in editor
+set(open_in_editor(out_path, args.editor));// 
+set(print(f"Saved AI output to: {out_path}"));// 
+end();// endfunc
+branch(if __name__ == "__main__":);// beginif
+path();//
+set(main());// 
+bend();// endif
+
+
+
+;INSECTA EMBEDDED SESSION INFORMATION
+; 255 16777215 65280 16777088 16711680 13158600 13158600 0 255 255 9895835 6946660 3289650
+;    buildAI.py   #   .
+; notepad.exe
+;INSECTA EMBEDDED ALTSESSION INFORMATION
+; 439 196 1166 1217 0 110   583   60    python.key  0

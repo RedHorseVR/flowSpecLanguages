@@ -1,0 +1,59 @@
+input(def get_cost(injury_type):);// beginfunc
+set();//  Simulated costs for different injuries
+set(costs = {);// 
+set("shoulder": 5000,);// 
+set("back": 7000,);// 
+set("neck": 3000);// 
+set(});// 
+set(return costs.get(injury_type.lower(), 0));// 
+end();// endfunc
+input(def main():);// beginfunc
+set(total_losses = 0);// 
+loop(while True:);// beginwhile
+set();//  Input for each attendant
+set(add_another = input("Do you want to add another attendant? (yes/no): ").strip().lower());// 
+branch(if add_another != 'yes':);// beginif
+path();//
+set(break);// 
+bend();// endif
+set();//  Input for attendant status
+set(attendant_status = input("Is the attendant injured? (yes/no): ").strip().lower());// 
+branch(if attendant_status == 'yes':);// beginif
+path();//
+set(injury_location = input("How were they injured? (mattress lifting/pulling fitted sheets/bending and lifting): ").strip().lower());// 
+set(injury_type = "");// 
+branch(if injury_location == "mattress lifting":);// beginif
+path();//
+set(injury_type = input("What type of injury? (shoulder/back/neck): ").strip().lower());// 
+path(elif injury_location == "pulling fitted sheets":);// beginelif
+set(injury_type = input("What type of injury? (shoulder/back/neck): ").strip().lower());// 
+path(elif injury_location == "bending and lifting":);// beginelif
+set(injury_type = input("What type of injury? (shoulder/back/neck): ").strip().lower());// 
+path(else:);// 
+set(print("No cost for this injury location."));// 
+set(continue);// 
+set();// endlif
+set();// endlif
+bend();// endif
+set();//  Get cost based on injury type
+set(cost = get_cost(injury_type));// 
+set(total_losses += cost);// 
+set(print(f"Workers compensation cost for {injury_type}: ${cost}"));// 
+path(else:);// 
+set(print("No cost for this attendant."));// 
+bend();// endif
+lend();// endwhile
+set();//  Check if corporate will call
+branch(if total_losses > 25000:);// beginif
+path();//
+set(print("CEO will schedule a call."));// 
+path(else:);// 
+set(print("Total losses are within acceptable limits."));// 
+bend();// endif
+set(print(f"Total losses from workers' comp: ${total_losses}"));// 
+end();// endfunc
+set();//  Run the main function
+branch(if __name__ == "__main__":);// beginif
+path();//
+set(main());// 
+bend();// endif

@@ -1,0 +1,269 @@
+;  IRL FlowCode Version: Version 10.0
+;  c1995-2015: Visual Flow Coder by 2LResearch
+;
+;  File Name : POML2VFC.py.vfc
+;  File Date : 01:13:23 PM - 15:Sep:2025
+
+event(import xml.etree.ElementTree as ET);// 
+event(from datetime import datetime);// 
+event(import argparse);// 
+event(import sys);// 
+event(import os);// 
+set(VFC_TOKEN =");"+"//");// 
+
+input(class POMLToVFCParser:);// beginclass
+branch();//
+path();//
+path();//
+event();//
+
+input(def __init__(self):);// beginmethod
+set(self.vfc_lines = []);// 
+set(self.indent_level = 0);// 
+end();// endmethod
+
+input(def parse(self, poml_content, output_filename="converted.vfc"):);// beginmethod
+set("""Parse POML content and convert to VFC format""");//
+set(self.vfc_lines = []);// 
+set(self.indent_level = 0);// 
+set();//  Add VFC header
+set(self._add_header(output_filename));// 
+branch(try:);// begintry
+path();//
+set();//  Parse XML
+set(root = ET.fromstring(poml_content));// 
+set();//  Process each element
+set(self._process_element(root));// 
+set();//  Add footer
+set(self._add_footer());// 
+path(except ET.ParseError as e:);// 
+set(raise ValueError(f"Invalid POML XML: {e}"));// 
+bend();// endtry
+set(return '\n'.join(self.vfc_lines));// 
+end();// endmethod
+
+input(def _add_header(self, filename="converted.vfc"):);// beginmethod
+set("""Add VFC file header""");//
+set(now = datetime.now());// 
+set(time_str = now.strftime("%I:%M:%S %p - %d:%b:%Y"));// 
+set(self.vfc_lines.extend([);// 
+set(";  IRL FlowCode Version: Version 10.0",);// 
+set(";  c1995-2015: Visual Flow Coder by 2LResearch",);// 
+set(";",);// 
+set(f";  File Name : {filename}",);// 
+set(f";  File Date : {time_str}",);// 
+set("");// 
+set(]));// 
+end();// endmethod
+
+input(def _process_element(self, element):);// beginmethod
+set("""Process a single XML element""");//
+set(tag = element.tag.lower());// 
+branch(if tag == 'poml':);// beginif
+path();//
+set();//  Root element, process children
+loop(for child in element:);// beginfor
+set(self._process_element(child));// 
+lend();// endfor
+path(elif tag == 'let':);// beginelif
+set(# Variable assignment: <let name="var" value="val" />);//  Variable assignment: <let name=0 value=0 />
+set(name = element.get('name', ''));// 
+set(value = element.get('value', ''));// 
+set(self.vfc_lines.append(f'set(name="{name}" value="{value}");'));// 
+set( );//self.vfc_lines.append('end();')
+set(self.vfc_lines.append(''));// 
+path(elif tag == 'task':);// beginelif
+set();//  Input task: <task>description</task>
+set(self.vfc_lines.append('end();'));// 
+set(task_text = element.text.strip() if element.text else '');// 
+set(self.vfc_lines.append(f'input({task_text});'));// 
+path(elif tag == 'if':);// beginelif
+set();//# Conditional branch: <if condition="expr">
+set(self.vfc_lines.append('branch( if );'));// 
+set(condition = element.get('condition', ''));// 
+set(self.vfc_lines.append(f'path( condition="{condition}");'));// 
+set();//  Process children of if block
+loop(for child in element:);// beginfor
+set(self._process_element(child));// 
+lend();// endfor
+path(elif tag == 'for':);// 
+set();//# Conditional branch: <if condition="expr">
+generic(each_var = element.get('each', ''));// ////
+generic(in_var = element.get('in', ''));// ////
+set(text =  f"for each {each_var}  in {in_var} ");//  Unknown element, process children
+set(self.vfc_lines.append(f'loop( {text} );' ));// 
+set();//  Process children of if block
+loop(for child in element:);// beginfor
+set(self._process_element(child));// 
+lend();// endfor
+set();//  Close the branch
+set(self.vfc_lines.append( f"lend( next {each_var} );" ));// 
+path(elif tag == 'else if'   or  tag == 'elseif'  :);// beginelif
+set();//  Else path
+set(condition = element.get('condition', ''));// 
+set(self.vfc_lines.append(f'path(if  condition="{condition}");'));// 
+set();//  Process children of else block
+loop(for child in element:);// beginfor
+set(self._process_element(child));// 
+lend();// endfor
+set();//  Close the branch
+path(elif tag == 'else':);// beginelif
+set();//  Else path
+set(self.vfc_lines.append('path(else);'));// 
+set();//  Process children of else block
+loop(for child in element:);// beginfor
+set(self._process_element(child));// 
+lend();// endfor
+set();//  Close the branch
+set(self.vfc_lines.append('bend();'));// 
+path(elif tag == 'p':);// beginelif
+set();//  Output paragraph: <p>text</p>
+set(text = element.text.strip() if element.text else '');// 
+set(self.vfc_lines.append(f'output({text});'));// 
+set();//  Add more element types as needed
+path(else:);// 
+set(text =  element.text.strip() if element.text else '');//  Unknown element, process children
+set( regular_text = '<' + element.tag + '>'  + text +  '</' + element.tag + '>');// regular_text = '<' + element.tag + '>'  +  element.text.strip() if element.text else '' +  '<//' + element.tag + '>'
+set(self.vfc_lines.append(f'set({regular_text});'));// 
+loop(for child in element:);// beginfor
+set(self._process_element(child));// 
+lend();// endfor
+set();// endlif
+set();// endlif
+set();// endlif
+set();// endlif
+set();// endlif
+bend();// endif
+end();// endmethod
+
+input(def _add_footer(self):);// beginmethod
+set("""Add VFC file footer""");//
+set(self.vfc_lines.extend([);// 
+set('end();',);// 
+set('',);// 
+set('',);// 
+set('',);// 
+set(f';{"INSECTA"} EMBEDDED SESSION INFORMATION',);// 
+set('; 255 16777215 65280 16777088 16711680 13158600 13158600 0 255 255 9895835 6946660 3289650',);// 
+set(';       //   ...',);// 
+set('; notepad.exe',);// 
+set(f';{"INSECTA"} EMBEDDED ALTSESSION INFORMATION',);// 
+set('; 1286 256 1272 1162 0 160   632   226    default.key  0');// 
+set(]));// 
+end();// endmethod
+bend();//
+end();// endclass
+
+input(def convert_poml_file(input_file, output_file=None):);// beginfunc
+set("""Convert POML file to VFC file""");//
+set();//  Validate input file
+branch(if not os.path.exists(input_file):);// beginif
+path();//
+set(raise FileNotFoundError(f"Input file not found: {input_file}"));// 
+bend();// endif
+set();//  Generate output filename if not provided
+branch(if output_file is None:);// beginif
+path();//
+set(base_name = os.path.splitext(input_file)[0]);// 
+set(output_file = f"{base_name}.vfc");// 
+bend();// endif
+set();//  Read POML content
+branch(try:);// begintry
+path();//
+branch(with open(input_file, 'r', encoding='utf-8') as f:);// beginwith
+path();//
+set(poml_content = f.read());// 
+bend();// endwith
+path(except Exception as e:);// 
+set(raise IOError(f"Error reading input file: {e}"));// 
+bend();// endtry
+set();//  Parse and convert
+set(parser = POMLToVFCParser());// 
+set(vfc_content = parser.parse(poml_content, os.path.basename(output_file)));// 
+set();//  Write VFC content
+branch(try:);// begintry
+path();//
+branch(with open(output_file, 'w', encoding='utf-8') as f:);// beginwith
+path();//
+set(f.write(vfc_content));// 
+bend();// endwith
+path(except Exception as e:);// 
+set(raise IOError(f"Error writing output file: {e}"));// 
+bend();// endtry
+set(return output_file);// 
+end();// endfunc
+
+input(def convert_poml_to_vfc(poml_content):);// beginfunc
+set("""Convenience function to convert POML to VFC (for backward compatibility)""");//
+set(parser = POMLToVFCParser());// 
+set(return parser.parse(poml_content));// 
+end();// endfunc
+
+input(def main():);// beginfunc
+set("""Main CLI function""");//
+set(parser = argparse.ArgumentParser();// 
+set(description="Convert POML files to VFC (Visual Flow Coder) format",);// 
+set(formatter_class=argparse.RawDescriptionHelpFormatter,);// 
+set(epilog="""Examples:);//
+set(python POML2VFC.py input.poml);// 
+set(python POML2VFC.py input.poml -o output.vfc);// 
+set(python POML2VFC.py input.poml --output custom_name.vfc);// 
+set(""");//
+set());// 
+set(parser.add_argument();// 
+set('input_file',);// 
+set(nargs='?',);// 
+set(help='Input POML file path');// 
+set());// 
+set(parser.add_argument();// 
+set('-o', '--output',);// 
+set(dest='output_file',);// 
+set(help='Output VFC file path (default: <input_name>.vfc)');// 
+set());// 
+set(parser.add_argument();// 
+set('-v', '--verbose',);// 
+set(action='store_true',);// 
+set(help='Enable verbose output');// 
+set());// 
+set(args = parser.parse_args());// 
+set();//  Check if input file was provided
+branch(if not args.input_file:);// beginif
+path();//
+set(print("Error: Input POML file is required", file=sys.stderr));// 
+set(print("Use --help for usage information"));// 
+set(sys.exit(1));// 
+bend();// endif
+branch(try:);// begintry
+path();//
+branch(if args.verbose:);// beginif
+path();//
+set(print(f"Converting {args.input_file} to VFC format..."));// 
+bend();// endif
+set(output_file = convert_poml_file(args.input_file, args.output_file));// 
+branch(if args.verbose:);// beginif
+path();//
+set(print(f"Successfully converted to: {output_file}"));// 
+set(print(f"File size: {os.path.getsize(output_file)} bytes"));// 
+path(else:);// 
+set(print(f"Converted: {args.input_file} -> {output_file}"));// 
+bend();// endif
+path(except Exception as e:);// 
+set(print(f"Error: {e}", file=sys.stderr));// 
+set(sys.exit(1));// 
+bend();// endtry
+end();// endfunc
+set();//  Example usage and testing
+branch(if __name__ == "__main__":);// beginif
+path();//
+set();//  Run CLI if called directly
+set(main());// 
+bend();// endif
+
+
+
+;INSECTA EMBEDDED SESSION INFORMATION
+; 255 16777215 65280 16777088 16711680 13158600 13158600 0 255 255 9895835 6946660 2302738
+;    _POML2VFC.py   #   .
+; notepad.exe
+;INSECTA EMBEDDED ALTSESSION INFORMATION
+; 302 46 2861 1052 0 130   4294967044   4294965418    python.key  0

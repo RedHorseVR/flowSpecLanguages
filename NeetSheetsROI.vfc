@@ -1,0 +1,64 @@
+;  IRL FlowCode Version: Version 10.0
+;  c1995-2015: Visual Flow Coder by 2LResearch
+;
+;  File Name : NeetSheetsROI.vfc
+;  File Date : 11:51:46 PM - 15:Sep:2025
+
+event(Please make a web page that uses the logic in the folowing flowchart);//
+process(try to use popup dialoags for input()s);//
+end(flowchart followsbelow :  ----------------------------------------------);//
+
+input(MAIN);//
+loop(FOR EACH ATTENDANT);//
+process(ATTENDANT STATUS);//
+lend(add another);//
+process(calcluate total losses from workers comp as dollars and hours and 8 hour days);//
+process( see if Corporate will call);//
+end();//
+
+input(ATTENDANT STATUS);//
+branch(injured room attendent ?);//
+path(yes);//
+branch(how where they injured  ?);//
+path(mattress lifting);//
+path(pulling fitted sheets);//
+path(bending and lifting);//
+bend( );//
+branch(what type of injury ?);//
+path(shoulder);//
+set(workers compensation cost   is);//////
+process(GET COST( Shoulder ));//
+path(back);//
+set(workers compensation cost   is);//////
+process(GET COST( Back ));//
+path(neck);//
+set(workers compensation cost   is);//////
+process(GET COST( Neck ));//
+bend( );//
+path(else: );//
+output(no cost);//
+bend( );//
+end();//
+
+input(Corporate);//
+branch(if    total losses are greater than 25000  :);//
+path();//
+output(CEO will schedule a call);//
+bend( );//
+end(   );//
+
+input(GET COST( INJURY ));//
+branch(WITH INJURY TYPE AND Housekeeping-job-related-injuries DOCUMENT   :);//
+path(try to keep costs by individual workes comp and insurce rates);//
+output(LOOK FOR COST OF INJURY);//
+bend( );//
+end(RETURN INJUTY COST);//
+
+
+
+;INSECTA EMBEDDED SESSION INFORMATION
+; 255 16777215 65280 16777088 16711680 13158600 13158600 0 255 255 9895835 6946660 3289650
+;    NeetSheetsROI   //   ...
+; notepad.exe
+;INSECTA EMBEDDED ALTSESSION INFORMATION
+; 514 468 1307 1577 35 130   538   114    BuildAI.key  0

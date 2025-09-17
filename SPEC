@@ -1,0 +1,14 @@
+Sure! Below is a simple Python program that counts from 1 to 10 and prints each number:
+
+```python
+# Program to count from 1 to 10
+
+def count_to_ten():
+    for number in range(1, 11):
+        print(number)
+
+# Call the function
+count_to_ten()
+```
+
+You can run this program in any Python environment. It defines a function `count_to_ten` that uses a `for` loop to iterate through numbers 1 to 10 and prints each number. Let me know if you need any modifications or additional features!

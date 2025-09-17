@@ -1,0 +1,29 @@
+;  IRL FlowCode Version: Version 10.0
+;  c1995-2015: Visual Flow Coder by 2LResearch
+;
+;  File Name : logic.vfc
+;  File Date : 07:51:36 PM - 16:Sep:2025
+
+set(name="is_premium_user" value="true");//
+end();//
+
+input(Generate a personalized greeting for a user.);//
+branch( if );//
+path( condition="is_premium_user");//
+output(Welcome back, valued premium member!);//
+path(if  condition="is_administrator");//
+output(Welcome Admn);//
+path(else);//
+output(Welcome back!);//
+bend();//
+set(<hello>hello</hello>);//
+end();//
+
+
+
+;INSECTA EMBEDDED SESSION INFORMATION
+; 255 16777215 65280 16777088 16711680 13158600 13158600 0 255 255 9895835 6946660 3289650
+;    //   //   ...
+; notepad.exe
+;INSECTA EMBEDDED ALTSESSION INFORMATION
+; 1286 256 1272 1162 0 160   498   212    BuildAI.key  0

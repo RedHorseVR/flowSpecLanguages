@@ -1,0 +1,24 @@
+;  IRL FlowCode Version: Version 10.0
+;  c1995-2015: Visual Flow Coder by 2LResearch
+;
+;  File Name : loop.vfc
+;  File Date : 01:05:51 PM - 15:Sep:2025
+
+set(name="products" value="[     {'name': 'Laptop', 'sales': 1200},     {'name': 'Monitor', 'sales': 850},     {'name': 'Keyboard', 'sales': 500}   ]");
+
+end();
+input(Generate a summary of the latest sales figures.);
+loop( for each product  in products  );
+output(Product: {{product.name}}
+      Sales: {{product.sales}} units);
+lend( next product );
+end();
+
+
+
+;INSECTA EMBEDDED SESSION INFORMATION
+; 255 16777215 65280 16777088 16711680 13158600 13158600 0 255 255 9895835 6946660 3289650
+;       //   ...
+; notepad.exe
+;INSECTA EMBEDDED ALTSESSION INFORMATION
+; 1286 256 1272 1162 0 160   632   226    default.key  0

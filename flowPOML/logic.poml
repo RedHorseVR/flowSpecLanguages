@@ -1,0 +1,22 @@
+<poml>
+  <let name="is_premium_user" value="true" />
+
+  <task>
+    Generate a personalized greeting for a user.
+  </task>
+  
+  <if condition="is_premium_user">
+    <p>Welcome back, valued premium member!</p>
+  </if>
+  
+	  <elseif condition="is_administrator">
+		<p>Welcome Admn</p>
+	  </elseif>
+
+	  <else>
+		<p>Welcome back!</p>
+	  </else>
+	
+
+  <hello> hello </hello>	
+</poml>

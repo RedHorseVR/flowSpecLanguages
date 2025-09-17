@@ -1,0 +1,18 @@
+<poml>
+  <let name="products" value="[
+    {'name': 'Laptop', 'sales': 1200},
+    {'name': 'Monitor', 'sales': 850},
+    {'name': 'Keyboard', 'sales': 500}
+  ]" />
+  <task>
+    Generate a summary of the latest sales figures.
+  </task>
+
+
+  <for each="product" in="products">
+    <p>
+      Product: {{product.name}}
+      Sales: {{product.sales}} units
+    </p>
+  </for>
+</poml>

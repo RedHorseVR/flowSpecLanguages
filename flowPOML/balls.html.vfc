@@ -1,0 +1,34 @@
+;  IRL FlowCode Version: Version 10.0
+;  c1995-2015: Visual Flow Coder by 2LResearch
+;
+;  File Name : balls.html.vfc
+;  File Date : 07:54:22 PM - 16:Sep:2025
+
+
+input(Main);//
+process(objects = SHOW BALLS);//
+loop(repeat forever);//
+loop(    do for all objects);//
+branch(when object clicked);//
+path( );//
+process(make it bounce five times);//
+bend( );//
+lend();//
+lend(keep going);//
+end(END );//
+
+input(FUNCTION SHOW BALLS);//
+set(objects = [ 'red ball'. 'blue ball', 'green ball' ] );//
+loop(    for each object in objects  );//
+output(show object at same level as others);//
+lend(  next object );//
+end(return objects);//
+
+
+
+;INSECTA EMBEDDED SESSION INFORMATION
+; 255 16777215 65280 16777088 16711680 13158600 13158600 0 255 255 9895835 6946660 3289650
+;    balls.html   //   ...
+; notepad.exe
+;INSECTA EMBEDDED ALTSESSION INFORMATION
+; 126 151 1493 981 15 210   759   4294967003    BuildAI.key  0
